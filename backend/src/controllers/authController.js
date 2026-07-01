@@ -15,7 +15,7 @@ export const register = async (req, res) => {
       return res.status(400).json({ error: 'El email ya está registrado' });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 12);
 
     const user = await prisma.user.create({
       data: {

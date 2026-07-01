@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nanaconecta-backend-config
+  namespace: nanaconecta
+  labels:
+    app.kubernetes.io/name: nanaconecta-backend
+data:
+  PORT: "3000"
+  NODE_ENV: "production"
