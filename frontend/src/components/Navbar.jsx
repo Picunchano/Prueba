@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const navStyle = `
@@ -224,6 +224,22 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handlePlanesClick = (e) => {
+    e.preventDefault();
+    setMenuOpen(false);
+    if (location.pathname === '/') {
+      const el = document.getElementById('pricing');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      navigate('/');
+      setTimeout(() => {
+        const el = document.getElementById('pricing');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 300);
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -245,7 +261,7 @@ export default function Navbar() {
           <Link to="/" className="nav-link">Inicio</Link>
           <Link to="/jobs" className="nav-link">Trabajos</Link>
           <Link to="/workers" className="nav-link">Trabajadoras</Link>
-          <Link to="/pricing" className="nav-link">Planes</Link>
+          <Link to="/#pricing" className="nav-link" onClick={handlePlanesClick}>Planes</Link>
           {user ? (
             <>
               <Link to="/dashboard" className="nav-link">Dashboard</Link>
@@ -283,7 +299,7 @@ export default function Navbar() {
         <Link to="/" className="nav-link">Inicio</Link>
         <Link to="/jobs" className="nav-link">Trabajos</Link>
         <Link to="/workers" className="nav-link">Trabajadoras</Link>
-        <Link to="/pricing" className="nav-link">Planes</Link>
+        <Link to="/#pricing" className="nav-link" onClick={handlePlanesClick}>Planes</Link>
         {user ? (
           <>
             <Link to="/dashboard" className="nav-link">Dashboard</Link>

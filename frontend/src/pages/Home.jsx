@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import PricingCards from '../components/PricingCards.jsx';
 
 const homeStyles = `
 .home-root {
@@ -449,6 +450,15 @@ export default function Home() {
               <div className="feature-desc">Sistema de calificaciones y reseñas de trabajos anteriores</div>
             </div>
           </div>
+        </section>
+
+        {/* Sección de planes y precios */}
+        <section id="pricing" className="features-section" style={{ scrollMarginTop: '80px' }}>
+          <h2 className="section-title">Planes y Precios</h2>
+          <p className="page-subtitle" style={{ textAlign: 'center', color: '#64748b', fontSize: '1.05rem', marginBottom: 40 }}>
+            Comienza gratis, escala cuando lo necesites
+          </p>
+          <PricingCards />
         </section>
       </div>
     </>

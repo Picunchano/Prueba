@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { CHILE_REGIONS } from '../data/regions';
+import PricingCards from '../components/PricingCards.jsx';
 
 const registerStyles = `
 .auth-page { display: flex; justify-content: center; align-items: center; min-height: calc(100vh - 64px); background: linear-gradient(135deg, #f8faff, #fdf2f8); padding: 40px 20px; }
@@ -25,6 +26,13 @@ const registerStyles = `
 .auth-link a:hover { text-decoration: underline; }
 .field-group { display: flex; gap: 12px; }
 .field-group > * { flex: 1; }
+
+.step2-page { min-height: calc(100vh - 64px); background: linear-gradient(135deg, #f8faff, #fdf2f8); padding: 60px 20px 80px; }
+.step2-container { max-width: 1100px; margin: 0 auto; animation: fadeIn 0.5s ease; }
+.step2-header { text-align: center; margin-bottom: 48px; animation: fadeInUp 0.5s ease-out; }
+.step2-title { font-size: 2.2rem; font-weight: 800; color: #0f172a; margin-bottom: 10px; }
+.step2-title-gradient { background: linear-gradient(135deg, #6366f1, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.step2-subtitle { color: #64748b; font-size: 1.05rem; }
 `;
 
 export default function Register() {
@@ -37,6 +45,7 @@ export default function Register() {
   const [commune, setCommune] = useState('');
   const [errors, setErrors] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [step, setStep] = useState(1);
   const { register } = useAuth();
   const navigate = useNavigate();
 
@@ -57,7 +66,7 @@ export default function Register() {
       if (regionId) payload.regionId = parseInt(regionId);
       if (commune) payload.commune = commune;
       await register(payload);
-      navigate('/');
+      setStep(2);
     } catch (err) {
       const data = err.response?.data;
       if (data?.errors && Array.isArray(data.errors)) {
@@ -69,6 +78,28 @@ export default function Register() {
       setLoading(false);
     }
   };
+
+  if (step === 2) {
+    return (
+      <>
+        <style>{registerStyles}</style>
+        <div className="step2-page">
+          <div className="step2-container">
+            <div className="step2-header">
+              <h1 className="step2-title">Elige tu plan para <span className="step2-title-gradient">comenzar</span></h1>
+              <p className="step2-subtitle">Puedes cambiar de plan en cualquier momento</p>
+            </div>
+            <PricingCards
+              layout="col"
+              onFree={() => navigate('/')}
+              onPaid={() => navigate('/')}
+              freeTextOverride="Continuar gratis"
+            />
+          </div>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
