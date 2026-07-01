@@ -2,88 +2,134 @@ import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
 const homeStyles = `
+.home-root {
+  background: linear-gradient(135deg, #f8faff 0%, #f0f4ff 50%, #fdf2f8 100%);
+  min-height: 100vh;
+}
+
 .hero-section {
   position: relative;
   overflow: hidden;
-  color: #f1f5f9;
-  text-align: center;
-  padding: 120px 20px 110px;
-  background: #0f172a;
-}
-.hero-bg-particles {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
+  padding: 80px 40px 60px;
 }
 .hero-content {
-  position: relative;
-  z-index: 1;
-  max-width: 820px;
+  max-width: 1200px;
   margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 48px;
+}
+.hero-col-left {
+  flex: 0 0 55%;
+}
+.hero-col-right {
+  flex: 0 0 45%;
 }
 .hero-title {
-  font-size: 3.4rem;
+  font-size: 3rem;
   font-weight: 800;
   letter-spacing: -1px;
   margin-bottom: 18px;
+  color: #0f172a;
+  line-height: 1.15;
+  animation: fadeInUp 0.8s ease-out;
+}
+.hero-title-gradient {
   background: linear-gradient(135deg, #6366f1, #ec4899);
-  background-size: 200% 200%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  animation: fadeInUp 0.8s ease-out, gradientShift 6s ease infinite;
-  line-height: 1.1;
 }
 .hero-subtitle {
-  font-size: 1.25rem;
-  color: #94a3b8;
-  margin-bottom: 36px;
-  max-width: 620px;
-  margin-left: auto;
-  margin-right: auto;
+  font-size: 1.2rem;
+  color: #475569;
+  margin-bottom: 32px;
+  max-width: 520px;
   animation: fadeInUp 0.8s ease-out 0.15s both;
 }
-.cta-btn {
+.hero-btns {
+  display: flex;
+  gap: 16px;
+  animation: fadeInUp 0.8s ease-out 0.3s both;
+}
+.hero-btn {
   display: inline-block;
   background: linear-gradient(135deg, #6366f1, #ec4899);
   background-size: 200% 200%;
   color: #fff;
   border: none;
-  padding: 16px 36px;
+  padding: 15px 32px;
   border-radius: 12px;
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-weight: 600;
   cursor: pointer;
   text-decoration: none;
   transition: transform 0.25s ease, box-shadow 0.25s ease, background-position 0.4s ease;
-  animation: fadeInUp 0.8s ease-out 0.3s both;
-  box-shadow: 0 0 30px rgba(99, 102, 241, 0.5);
+  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
 }
-.cta-btn:hover {
-  transform: scale(1.05);
+.hero-btn:hover {
+  transform: translateY(-3px);
   background-position: 100% 50%;
-  box-shadow: 0 0 45px rgba(236, 72, 153, 0.6);
+  box-shadow: 0 12px 32px rgba(236, 72, 153, 0.4);
+}
+.hero-btn-outline {
+  display: inline-block;
+  background: #fff;
+  color: #6366f1;
+  border: 2px solid #6366f1;
+  padding: 13px 30px;
+  border-radius: 12px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.3s ease;
+}
+.hero-btn-outline:hover {
+  transform: translateY(-3px);
+  background: #6366f1;
+  color: #fff;
+  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
+}
+.hero-img {
+  width: 100%;
+  height: 420px;
+  object-fit: cover;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+  animation: fadeInUp 0.8s ease-out 0.3s both;
+}
+
+.stats-section {
+  padding: 60px 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.stats-row {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  flex-wrap: wrap;
 }
 .stat-item {
   text-align: center;
   animation: fadeInUp 0.6s ease-out both;
+  flex: 1;
+  min-width: 200px;
 }
 .stat-item:nth-child(1) { animation-delay: 0.1s; }
 .stat-item:nth-child(2) { animation-delay: 0.2s; }
 .stat-item:nth-child(3) { animation-delay: 0.3s; }
 .stat-card {
-  background: #1e293b;
-  border: 1px solid rgba(99, 102, 241, 0.2);
+  background: #ffffff;
   border-radius: 18px;
-  padding: 32px 24px;
-  width: 240px;
-  transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+  padding: 36px 24px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 .stat-card:hover {
-  border-color: #6366f1;
   transform: translateY(-6px);
-  box-shadow: 0 12px 30px rgba(99, 102, 241, 0.25);
+  box-shadow: 0 12px 36px rgba(99,102,241,0.12);
 }
 .stat-number {
   font-size: 2.6rem;
@@ -97,16 +143,94 @@ const homeStyles = `
 }
 .stat-label {
   font-size: 0.95rem;
-  color: #94a3b8;
+  color: #475569;
   margin-top: 10px;
 }
-.feature-card {
-  background: #1e293b;
-  border: 1px solid rgba(99, 102, 241, 0.2);
+
+.verify-section {
+  padding: 60px 40px 80px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.verify-content {
+  display: flex;
+  align-items: center;
+  gap: 48px;
+}
+.verify-col-left {
+  flex: 0 0 45%;
+}
+.verify-col-right {
+  flex: 1;
+}
+.verify-img {
+  width: 100%;
+  height: 380px;
+  object-fit: cover;
   border-radius: 16px;
-  padding: 32px 24px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.1);
+  animation: fadeInUp 0.6s ease-out;
+}
+.verify-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 16px;
+  line-height: 1.2;
+}
+.verify-text {
+  font-size: 1.05rem;
+  color: #475569;
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+.verify-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.verify-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1rem;
+  color: #1e293b;
+  font-weight: 500;
+}
+.verify-check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #dcfce7;
+  color: #16a34a;
+  font-weight: 800;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.features-section {
+  padding: 60px 40px 80px;
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+}
+.features-grid {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+.feature-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 36px 28px;
   width: 280px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  max-width: 100%;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   animation: fadeInUp 0.6s ease-out both;
   text-align: center;
 }
@@ -116,62 +240,75 @@ const homeStyles = `
 .feature-card:nth-child(4) { animation-delay: 0.4s; }
 .feature-card:hover {
   transform: translateY(-10px);
-  border-color: #6366f1;
-  box-shadow: 0 16px 40px rgba(99, 102, 241, 0.25);
+  box-shadow: 0 16px 48px rgba(99,102,241,0.12);
 }
 .feature-icon {
   font-size: 3rem;
   margin-bottom: 18px;
   display: inline-block;
-  background: linear-gradient(135deg, #6366f1, #ec4899);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+}
+.feature-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #0f172a;
+}
+.feature-desc {
+  color: #475569;
+  font-size: 0.95rem;
 }
 .section-title {
   font-size: 2.2rem;
+  font-weight: 800;
   margin-bottom: 40px;
-  background: linear-gradient(135deg, #6366f1, #ec4899);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #0f172a;
   text-align: center;
   animation: fadeInUp 0.6s ease-out;
 }
+
+@media (max-width: 768px) {
+  .hero-section { padding: 40px 1rem 32px; }
+  .hero-content { flex-direction: column; gap: 0; }
+  .hero-col-left { flex: none; width: 100%; }
+  .hero-col-right { display: none; }
+  .hero-title { font-size: 1.8rem; }
+  .hero-subtitle { font-size: 1rem; margin-bottom: 24px; }
+  .hero-btns { flex-direction: column; gap: 12px; }
+  .hero-btn, .hero-btn-outline { width: 100%; text-align: center; }
+  .stats-section { padding: 40px 1rem; }
+  .stats-row { flex-direction: column; align-items: center; gap: 20px; }
+  .stat-card { width: 100%; max-width: 320px; padding: 24px 20px; }
+  .stat-number { font-size: 2rem; }
+  .verify-section { padding: 40px 1rem 60px; }
+  .verify-content { flex-direction: column; gap: 24px; }
+  .verify-col-left, .verify-col-right { flex: none; width: 100%; }
+  .verify-img { height: 260px; }
+  .verify-title { font-size: 1.5rem; }
+  .features-section { padding: 40px 1rem 60px; }
+  .features-grid { flex-direction: column; align-items: center; gap: 20px; }
+  .feature-card { width: 100%; max-width: 320px; padding: 24px 20px; }
+  .section-title { font-size: 1.5rem; margin-bottom: 24px; }
+}
+
+@media (max-width: 480px) {
+  .hero-title { font-size: 1.5rem; }
+  .hero-subtitle { font-size: 0.9rem; }
+  .stat-number { font-size: 1.7rem; }
+  .verify-title { font-size: 1.3rem; }
+  .feature-icon { font-size: 2.2rem; }
+  .section-title { font-size: 1.3rem; }
+}
 `;
 
-const styles = {
-  stats: {
-    display: 'flex',
-    justifyContent: 'center',
-    gap: '32px',
-    padding: '70px 20px',
-    background: '#0f172a',
-    flexWrap: 'wrap',
-  },
-  features: {
-    padding: '70px 20px 90px',
-    textAlign: 'center',
-    background: '#0f172a',
-  },
-  featuresGrid: {
-    display: 'flex',
-    justifyContent: 'center',
-    gap: '32px',
-    flexWrap: 'wrap',
-    maxWidth: '1100px',
-    margin: '0 auto',
-  },
-  featureTitle: {
-    fontSize: '1.25rem',
-    fontWeight: 700,
-    marginBottom: '10px',
-    color: '#f1f5f9',
-  },
-  featureDesc: {
-    color: '#94a3b8',
-    fontSize: '0.95rem',
-  },
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.matchMedia('(max-width: 768px)').matches);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+  return isMobile;
 };
 
 function useCounter(end, duration = 2000) {
@@ -204,16 +341,6 @@ function useCounter(end, duration = 2000) {
   return { count, ref };
 }
 
-const particles = [
-  { cx: 100, cy: 80, r: 60, color: '#6366f1', delay: '0s', dur: '8s' },
-  { cx: 280, cy: 160, r: 90, color: '#ec4899', delay: '1s', dur: '10s' },
-  { cx: 480, cy: 60, r: 50, color: '#22d3ee', delay: '2s', dur: '9s' },
-  { cx: 680, cy: 140, r: 70, color: '#6366f1', delay: '1.5s', dur: '11s' },
-  { cx: 880, cy: 90, r: 55, color: '#ec4899', delay: '0.5s', dur: '12s' },
-  { cx: 1080, cy: 170, r: 80, color: '#22d3ee', delay: '2.5s', dur: '10s' },
-  { cx: 1200, cy: 60, r: 45, color: '#6366f1', delay: '1.2s', dur: '9s' },
-];
-
 export default function Home() {
   const workers = useCounter(260000, 2000);
   const noContract = useCounter(48, 1500);
@@ -222,73 +349,104 @@ export default function Home() {
   return (
     <>
       <style>{homeStyles}</style>
-      <div>
+      <div className="home-root">
+        {/* Hero con dos columnas */}
         <section className="hero-section">
-          <svg className="hero-bg-particles" viewBox="0 0 1280 250" preserveAspectRatio="none">
-            {particles.map((p, i) => (
-              <circle
-                key={i}
-                cx={p.cx}
-                cy={p.cy}
-                r={p.r}
-                fill={p.color}
-                opacity="0.12"
-                style={{ animation: `float ${p.dur} ease-in-out ${p.delay} infinite` }}
-              />
-            ))}
-          </svg>
           <div className="hero-content">
-            <h1 className="hero-title">Conectamos hogares con trabajadoras confiables</h1>
-            <p className="hero-subtitle">
-              La plataforma que busca el equilibrio entre hogares y personas que necesitan empleo digno
-            </p>
-            <Link to="/jobs" className="cta-btn">Ver trabajos disponibles</Link>
-          </div>
-        </section>
-
-        <section style={styles.stats}>
-          <div className="stat-item" ref={workers.ref}>
-            <div className="stat-card">
-              <div className="stat-number">{workers.count.toLocaleString('es-CL')}</div>
-              <div className="stat-label">Trabajadoras registradas</div>
+            <div className="hero-col-left">
+              <h1 className="hero-title">
+                Conectamos hogares con <span className="hero-title-gradient">trabajadoras de confianza</span>
+              </h1>
+              <p className="hero-subtitle">
+                La plataforma que busca el equilibrio entre hogares y personas que necesitan empleo digno
+              </p>
+              <div className="hero-btns">
+                <Link to="/jobs" className="hero-btn">Ver trabajos disponibles</Link>
+                <Link to="/register" className="hero-btn-outline">Crear cuenta</Link>
+              </div>
             </div>
-          </div>
-          <div className="stat-item" ref={noContract.ref}>
-            <div className="stat-card">
-              <div className="stat-number">{noContract.count}%</div>
-              <div className="stat-label">Sin contrato formal</div>
-            </div>
-          </div>
-          <div className="stat-item" ref={verified.ref}>
-            <div className="stat-card">
-              <div className="stat-number">{verified.count}%</div>
-              <div className="stat-label">Trabajadoras verificadas</div>
+            <div className="hero-col-right">
+              <img className="hero-img" src="/pictures/familia.jpg" alt="Familia empleadora" />
             </div>
           </div>
         </section>
 
-        <section style={styles.features}>
+        {/* Stats */}
+        <section className="stats-section">
+          <div className="stats-row">
+            <div className="stat-item" ref={workers.ref}>
+              <div className="stat-card">
+                <div className="stat-number">{workers.count.toLocaleString('es-CL')}</div>
+                <div className="stat-label">Trabajadoras registradas</div>
+              </div>
+            </div>
+            <div className="stat-item" ref={noContract.ref}>
+              <div className="stat-card">
+                <div className="stat-number">{noContract.count}%</div>
+                <div className="stat-label">Sin contrato formal</div>
+              </div>
+            </div>
+            <div className="stat-item" ref={verified.ref}>
+              <div className="stat-card">
+                <div className="stat-number">{verified.count}%</div>
+                <div className="stat-label">Trabajadoras verificadas</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Trabajadoras verificadas */}
+        <section className="verify-section">
+          <div className="verify-content">
+            <div className="verify-col-left">
+              <img className="verify-img" src="/pictures/nana.jpg" alt="Trabajadora verificada" />
+            </div>
+            <div className="verify-col-right">
+              <h2 className="verify-title">Trabajadoras verificadas y de confianza</h2>
+              <p className="verify-text">
+                En NanaConecta nos preocupamos por la seguridad de tu hogar. Cada trabajadora pasa por un proceso de verificación riguroso.
+              </p>
+              <div className="verify-list">
+                <div className="verify-item">
+                  <span className="verify-check">✓</span>
+                  <span>Identidad verificada</span>
+                </div>
+                <div className="verify-item">
+                  <span className="verify-check">✓</span>
+                  <span>Referencias comprobadas</span>
+                </div>
+                <div className="verify-item">
+                  <span className="verify-check">✓</span>
+                  <span>Contratos según Ley 20.786</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Features */}
+        <section className="features-section">
           <h2 className="section-title">¿Por qué NanaConecta?</h2>
-          <div style={styles.featuresGrid}>
+          <div className="features-grid">
             <div className="feature-card">
               <div className="feature-icon">🔍</div>
-              <div style={styles.featureTitle}>Búsqueda Fácil</div>
-              <div style={styles.featureDesc}>Encuentra trabajadoras por ubicación, habilidades y tarifa horaria</div>
+              <div className="feature-title">Búsqueda Fácil</div>
+              <div className="feature-desc">Encuentra trabajadoras por ubicación, habilidades y tarifa horaria</div>
             </div>
             <div className="feature-card">
               <div className="feature-icon">✅</div>
-              <div style={styles.featureTitle}>100% Verificadas</div>
-              <div style={styles.featureDesc}>Todas las trabajadoras pasan por un proceso de verificación</div>
+              <div className="feature-title">100% Verificadas</div>
+              <div className="feature-desc">Todas las trabajadoras pasan por un proceso de verificación</div>
             </div>
             <div className="feature-card">
               <div className="feature-icon">📋</div>
-              <div style={styles.featureTitle}>Contratos Seguros</div>
-              <div style={styles.featureDesc}>Formaliza acuerdos con contratos claros para ambas partes</div>
+              <div className="feature-title">Contratos Seguros</div>
+              <div className="feature-desc">Formaliza acuerdos con contratos claros para ambas partes</div>
             </div>
             <div className="feature-card">
               <div className="feature-icon">⭐</div>
-              <div style={styles.featureTitle}>Reseñas Confiables</div>
-              <div style={styles.featureDesc}>Sistema de calificaciones y reseñas de trabajos anteriores</div>
+              <div className="feature-title">Reseñas Confiables</div>
+              <div className="feature-desc">Sistema de calificaciones y reseñas de trabajos anteriores</div>
             </div>
           </div>
         </section>

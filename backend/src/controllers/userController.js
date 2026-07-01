@@ -1,4 +1,11 @@
 import prisma from '../config/database.js';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const avatarsDir = path.join(__dirname, '../../public/uploads/avatars');
 
 export const getProfile = async (req, res) => {
   try {
@@ -69,5 +76,41 @@ export const updateEmployerProfile = async (req, res) => {
   } catch (error) {
     console.error('UpdateEmployerProfile error:', error);
     res.status(500).json({ error: 'Error al actualizar perfil de empleador' });
+  }
+};
+
+export const uploadAvatar = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No se subió ningún archivo' });
+    }
+
+    const avatarUrl = `/uploads/avatars/${req.file.filename}`;
+
+    const existing = await prisma.user.findUnique({
+      where: { id: req.user.id },
+      select: { avatarUrl: true },
+    });
+
+    const updated = await prisma.user.update({
+      where: { id: req.user.id },
+      data: { avatarUrl },
+      select: { id: true, avatarUrl: true },
+    });
+
+    if (existing && existing.avatarUrl) {
+      const oldFileName = path.basename(existing.avatarUrl);
+      const oldFilePath = path.join(avatarsDir, oldFileName);
+      if (fs.existsSync(oldFilePath)) {
+        fs.unlink(oldFilePath, (err) => {
+          if (err) console.error('Error al eliminar avatar anterior:', err);
+        });
+      }
+    }
+
+    res.json({ avatarUrl: updated.avatarUrl });
+  } catch (error) {
+    console.error('UploadAvatar error:', error);
+    res.status(500).json({ error: 'Error al subir foto de perfil' });
   }
 };

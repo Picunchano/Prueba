@@ -26,9 +26,12 @@ services:
       JWT_SECRET: "nanaconecta_jwt_secret_super_seguro_2024_xyz"
       PORT: 3000
       NODE_ENV: production
+      FRONTEND_URL: "http://localhost:5173"
     depends_on:
       postgres:
         condition: service_healthy
+    volumes:
+      - ./backend/public/uploads:/app/public/uploads
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000/api/health"]
       interval: 30s

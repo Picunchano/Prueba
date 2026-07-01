@@ -3,6 +3,8 @@ import api from '../api/axios';
 
 const AuthContext = createContext(null);
 
+const API_BASE = 'http://localhost:3000';
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('token'));
@@ -43,8 +45,17 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
+  const updateAvatar = (avatarUrl) => {
+    const fullUrl = avatarUrl.startsWith('http') ? avatarUrl : `${API_BASE}${avatarUrl}`;
+    setUser((prev) => {
+      if (!prev) return prev;
+      const updated = { ...prev, avatarUrl: fullUrl };
+      return updated;
+    });
+  };
+
   return (
-    <AuthContext.Provider value={{ user, token, login, register, logout }}>
+    <AuthContext.Provider value={{ user, token, login, register, logout, updateAvatar }}>
       {children}
     </AuthContext.Provider>
   );

@@ -4,11 +4,20 @@ import api from '../api/axios';
 import ReviewsList from '../components/ReviewsList';
 import { useAuth } from '../context/AuthContext';
 
+const API_BASE = 'http://localhost:3000';
+
+function getInitials(name) {
+  if (!name) return '?';
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
 const wpStyles = `
 .wp-container { max-width: 700px; margin: 40px auto; padding: 0 20px; animation: fadeIn 0.4s ease; }
 .wp-card { background: #fff; border-radius: 12px; padding: 32px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); animation: slideUp 0.5s ease-out; }
 .wp-header { display: flex; align-items: center; gap: 20px; margin-bottom: 24px; }
-.wp-avatar { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #e94560, #c0392b); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 2rem; font-weight: bold; flex-shrink: 0; }
+.wp-avatar { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #e94560, #c0392b); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 2rem; font-weight: bold; flex-shrink: 0; overflow: hidden; }
 .wp-name { font-size: 1.6rem; font-weight: bold; color: #1a1a2e; margin-bottom: 4px; }
 .wp-role { font-size: 0.9rem; color: #888; }
 .wp-rate { font-size: 1.4rem; font-weight: bold; color: #e94560; margin-top: 4px; }
@@ -80,7 +89,21 @@ export default function WorkerProfile() {
         <a className="wp-back" onClick={() => navigate(-1)}>← Volver</a>
         <div className="wp-card">
           <div className="wp-header">
-            <div className="wp-avatar">{worker.name?.charAt(0).toUpperCase()}</div>
+            {worker.avatarUrl ? (
+              <img
+                className="wp-avatar"
+                src={`${API_BASE}${worker.avatarUrl}`}
+                alt={worker.name}
+                style={{ objectFit: 'cover' }}
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  e.target.nextSibling.style.display = 'flex';
+                }}
+              />
+            ) : null}
+            <div className="wp-avatar" style={{ display: worker.avatarUrl ? 'none' : 'flex' }}>
+              {worker.name?.charAt(0).toUpperCase()}
+            </div>
             <div>
               <div className="wp-name">{worker.name}</div>
               <div className="wp-role">Trabajadora</div>
@@ -111,7 +134,7 @@ export default function WorkerProfile() {
           )}
 
           {user && user.id !== worker.id && (
-            <button className="wp-msg-btn" onClick={() => navigate('/messages')}>💬 Enviar Mensaje</button>
+            <button className="wp-msg-btn" onClick={() => navigate(`/messages?userId=${worker.id}`)}>💬 Enviar Mensaje</button>
           )}
           {!user && (
             <button className="wp-msg-btn" onClick={() => navigate('/login')}>💬 Inicia sesión para contactar</button>

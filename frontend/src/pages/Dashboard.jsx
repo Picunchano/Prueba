@@ -4,57 +4,92 @@ import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import ReviewModal from '../components/ReviewModal';
 
+const API_BASE = 'http://localhost:3000';
+
+function getInitials(name) {
+  if (!name) return '?';
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
 const dashStyles = `
-.page-wrap { background: #0f172a; min-height: calc(100vh - 64px); padding: 48px 20px 64px; }
+.page-wrap { background: #f8faff; min-height: calc(100vh - 64px); padding: 48px 20px 64px; }
 .dash-container { max-width: 1000px; margin: 0 auto; animation: fadeIn 0.4s ease; }
 .dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 36px; flex-wrap: wrap; gap: 16px; animation: fadeInUp 0.5s ease-out; }
-.dash-title { font-size: 2.2rem; color: #f1f5f9; letter-spacing: -0.5px; }
+.dash-title { font-size: 2.2rem; color: #0f172a; letter-spacing: -0.5px; }
 .dash-title-gradient { background: linear-gradient(135deg, #6366f1, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-.dash-subtitle { color: #94a3b8; font-size: 1rem; margin-top: 4px; }
-.dash-section-title { font-size: 1.3rem; color: #f1f5f9; margin-bottom: 18px; padding-bottom: 10px; border-bottom: 2px solid transparent; border-image: linear-gradient(90deg, #6366f1, #ec4899) 1; display: inline-block; }
-.dash-card { background: #1e293b; border: 1px solid rgba(99, 102, 241, 0.15); border-radius: 14px; padding: 22px; margin-bottom: 14px; transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease; animation: fadeInUp 0.4s ease-out both; }
-.dash-card:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(0,0,0,0.35); }
-.dash-card-title { font-size: 1.15rem; font-weight: 700; color: #f1f5f9; margin-bottom: 6px; }
-.dash-card-meta { display: flex; gap: 18px; font-size: 0.9rem; color: #94a3b8; margin-bottom: 8px; flex-wrap: wrap; align-items: center; }
-.dash-card-desc { color: #cbd5e1; font-size: 0.95rem; margin-bottom: 12px; line-height: 1.5; }
-.rate { color: #22d3ee; font-weight: 800; }
+.dash-subtitle { color: #64748b; font-size: 1rem; margin-top: 4px; }
+.dash-section-title { font-size: 1.3rem; color: #0f172a; margin-bottom: 18px; padding-bottom: 10px; border-bottom: 2px solid transparent; border-image: linear-gradient(90deg, #6366f1, #ec4899) 1; display: inline-block; }
+.dash-card { background: #ffffff; border: 1px solid #f1f5f9; border-radius: 14px; padding: 22px; margin-bottom: 14px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); transition: transform 0.25s ease, box-shadow 0.25s ease; animation: fadeInUp 0.4s ease-out both; }
+.dash-card:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(99,102,241,0.1); }
+.dash-card-title { font-size: 1.15rem; font-weight: 700; color: #0f172a; margin-bottom: 6px; }
+.dash-card-meta { display: flex; gap: 18px; font-size: 0.9rem; color: #64748b; margin-bottom: 8px; flex-wrap: wrap; align-items: center; }
+.dash-card-desc { color: #475569; font-size: 0.95rem; margin-bottom: 12px; line-height: 1.5; }
+.rate { color: #6366f1; font-weight: 800; }
 .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-.badge-pending { background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.4); }
-.badge-accepted { background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.4); }
-.badge-rejected { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.4); }
-.badge-open { background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.4); }
-.badge-closed { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.4); }
-.badge-active { background: rgba(99, 102, 241, 0.2); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.4); }
-.badge-completed { background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.4); }
-.badge-cancelled { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.4); }
+.badge-pending { background: #fef3c7; color: #d97706; border: 1px solid #fde68a; }
+.badge-accepted { background: #dcfce7; color: #16a34a; border: 1px solid #bbf7d0; }
+.badge-rejected { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
+.badge-open { background: #dcfce7; color: #16a34a; border: 1px solid #bbf7d0; }
+.badge-closed { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
+.badge-active { background: #ede9fe; color: #6366f1; border: 1px solid #ddd6fe; }
+.badge-completed { background: #dcfce7; color: #16a34a; border: 1px solid #bbf7d0; }
+.badge-cancelled { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
 .btn { padding: 9px 16px; border: none; border-radius: 10px; cursor: pointer; font-size: 0.9rem; font-weight: 600; transition: transform 0.2s ease, box-shadow 0.2s ease; }
 .btn:hover { transform: translateY(-2px); }
-.btn-primary { background: linear-gradient(135deg, #6366f1, #ec4899); background-size: 200% 200%; color: #fff; box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35); transition: transform 0.2s ease, box-shadow 0.2s ease, background-position 0.4s ease; }
-.btn-primary:hover { background-position: 100% 50%; box-shadow: 0 6px 20px rgba(236, 72, 153, 0.45); }
-.btn-success { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.4); }
-.btn-success:hover { background: rgba(16, 185, 129, 0.25); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35); }
-.btn-danger { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.4); }
-.btn-danger:hover { background: rgba(239, 68, 68, 0.25); box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35); }
-.btn-outline { background: transparent; border: 1px solid #334155; color: #cbd5e1; }
-.btn-outline:hover { border-color: #ef4444; color: #ef4444; background: rgba(239, 68, 68, 0.1); }
+.btn-primary { background: linear-gradient(135deg, #6366f1, #ec4899); background-size: 200% 200%; color: #fff; box-shadow: 0 4px 14px rgba(99, 102, 241, 0.25); transition: transform 0.2s ease, box-shadow 0.2s ease, background-position 0.4s ease; }
+.btn-primary:hover { background-position: 100% 50%; box-shadow: 0 6px 20px rgba(236, 72, 153, 0.35); }
+.btn-success { background: #dcfce7; color: #16a34a; border: 1px solid #bbf7d0; }
+.btn-success:hover { background: #bbf7d0; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.2); }
+.btn-danger { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
+.btn-danger:hover { background: #fecaca; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2); }
+.btn-outline { background: transparent; border: 1px solid #e2e8f0; color: #64748b; }
+.btn-outline:hover { border-color: #dc2626; color: #dc2626; background: #fee2e2; }
 .btn-sm { padding: 7px 12px; font-size: 0.82rem; }
 .btn-group { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
-.modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); display: flex; justify-content: center; align-items: center; z-index: 200; animation: fadeIn 0.2s ease; }
-.modal { background: #1e293b; border-radius: 16px; padding: 34px; width: 90%; max-width: 480px; border: 1px solid rgba(99, 102, 241, 0.3); box-shadow: 0 20px 60px rgba(0,0,0,0.6); animation: fadeInUp 0.3s ease-out; max-height: 90vh; overflow-y: auto; }
-.modal-title { font-size: 1.5rem; color: #f1f5f9; margin-bottom: 20px; }
+.modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); display: flex; justify-content: center; align-items: center; z-index: 200; animation: fadeIn 0.2s ease; }
+.modal { background: #ffffff; border-radius: 16px; padding: 34px; width: 90%; max-width: 480px; border: none; box-shadow: 0 20px 60px rgba(0,0,0,0.15); animation: fadeInUp 0.3s ease-out; max-height: 90vh; overflow-y: auto; }
+.modal-title { font-size: 1.5rem; color: #0f172a; margin-bottom: 20px; }
 .modal-title-gradient { background: linear-gradient(135deg, #6366f1, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-.modal-input { width: 100%; padding: 11px 14px; margin-bottom: 14px; border: 1px solid #334155; border-radius: 10px; font-size: 1rem; background: #0f172a; color: #f1f5f9; box-sizing: border-box; transition: border-color 0.3s ease, box-shadow 0.3s ease; outline: none; }
-.modal-input::placeholder { color: #475569; }
-.modal-input:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); }
+.modal-input { width: 100%; padding: 11px 14px; margin-bottom: 14px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 1rem; background: #ffffff; color: #0f172a; box-sizing: border-box; transition: border-color 0.3s ease, box-shadow 0.3s ease; outline: none; }
+.modal-input::placeholder { color: #94a3b8; }
+.modal-input:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,0.1); }
 .modal-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 22px; }
-.btn-cancel { background: rgba(148, 163, 184, 0.1); color: #cbd5e1; border: 1px solid #334155; }
-.btn-cancel:hover { background: rgba(148, 163, 184, 0.2); }
-.modal-error { background: rgba(239, 68, 68, 0.12); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); padding: 12px; border-radius: 10px; margin-bottom: 14px; text-align: center; animation: shake 0.5s ease; font-size: 0.9rem; }
-.empty-state { text-align: center; padding: 40px; color: #94a3b8; animation: fadeIn 0.4s ease; }
+.btn-cancel { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; }
+.btn-cancel:hover { background: #e2e8f0; }
+.modal-error { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; padding: 12px; border-radius: 10px; margin-bottom: 14px; text-align: center; animation: shake 0.5s ease; font-size: 0.9rem; }
+.empty-state { text-align: center; padding: 40px; color: #64748b; animation: fadeIn 0.4s ease; }
 .skeleton-dash { display: flex; flex-direction: column; gap: 14px; max-width: 1000px; margin: 0 auto; }
-.skel-line { height: 13px; border-radius: 6px; background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%); background-size: 200% 100%; animation: shimmer 1.5s ease-in-out infinite; margin-bottom: 10px; }
+.skel-line { height: 13px; border-radius: 6px; background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 200% 100%; animation: shimmer 1.5s ease-in-out infinite; margin-bottom: 10px; }
 .skel-line.w50 { width: 50%; } .skel-line.w30 { width: 30%; } .skel-line.w80 { width: 80%; }
-.skel-card { background: #1e293b; border-radius: 14px; padding: 22px; border: 1px solid rgba(99,102,241,0.1); }
+.skel-card { background: #ffffff; border-radius: 14px; padding: 22px; border: 1px solid #f1f5f9; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+.dash-app-row { display: flex; align-items: center; gap: 14px; }
+.dash-app-avatar { width: 48px; height: 48px; border-radius: 50%; overflow: hidden; flex-shrink: 0; position: relative; background: linear-gradient(135deg, #6366f1, #ec4899); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 1.05rem; }
+.dash-app-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+@media (max-width: 768px) {
+  .page-wrap { padding: 24px 1rem 48px; }
+  .dash-container { max-width: 100%; }
+  .dash-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .dash-title { font-size: 1.5rem; }
+  .dash-section-title { font-size: 1.1rem; }
+  .dash-card { padding: 16px 14px; margin-bottom: 12px; }
+  .dash-card-title { font-size: 1rem; }
+  .dash-card-meta { gap: 10px; font-size: 0.82rem; flex-direction: column; align-items: flex-start; gap: 4px; }
+  .btn-group { flex-direction: column; gap: 8px; }
+  .btn-group .btn { width: 100%; }
+  .btn { padding: 12px 16px; font-size: 0.88rem; min-height: 44px; }
+  .modal { width: 95vw; padding: 22px 18px; border-radius: 14px; }
+  .modal-input { padding: 12px 12px; }
+  .modal-actions { flex-direction: column-reverse; gap: 10px; }
+  .modal-actions .btn { width: 100%; }
+}
+
+@media (max-width: 480px) {
+  .page-wrap { padding: 20px 1rem 40px; }
+  .dash-title { font-size: 1.3rem; }
+}
 `;
 
 function SkeletonDash() {
@@ -203,11 +238,23 @@ function EmployerDashboard() {
         applications.map((app, i) => (
           <div key={app.id} className="dash-card" style={{ animationDelay: `${i * 0.05}s` }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-              <div>
-                <div className="dash-card-title">{app.worker?.name}</div>
-                <div className="dash-card-meta">
-                  <span>Trabajo: {app.job?.title}</span>
-                  <span className={`badge badge-${(app.status || 'pending').toLowerCase()}`}>{app.status}</span>
+              <div className="dash-app-row">
+                <div className="dash-app-avatar">
+                  {app.worker?.avatarUrl ? (
+                    <img
+                      src={app.worker.avatarUrl.startsWith('http') ? app.worker.avatarUrl : `${API_BASE}${app.worker.avatarUrl}`}
+                      alt={app.worker?.name}
+                      onError={(e) => { e.target.style.display = 'none'; }}
+                    />
+                  ) : null}
+                  <span style={{ display: app.worker?.avatarUrl ? 'none' : 'flex' }}>{getInitials(app.worker?.name)}</span>
+                </div>
+                <div>
+                  <div className="dash-card-title">{app.worker?.name}</div>
+                  <div className="dash-card-meta">
+                    <span>Trabajo: {app.job?.title}</span>
+                    <span className={`badge badge-${(app.status || 'pending').toLowerCase()}`}>{app.status}</span>
+                  </div>
                 </div>
               </div>
             </div>

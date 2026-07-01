@@ -10,22 +10,25 @@
 html {
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 body {
   font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  background: #0f172a;
-  color: #f1f5f9;
+  background-color: #f8faff;
+  color: #0f172a;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 img,
 svg {
   display: block;
   max-width: 100%;
+  height: auto;
 }
 
 a {
@@ -63,13 +66,13 @@ h6 {
 }
 
 ::-webkit-scrollbar-track {
-  background: #0f172a;
+  background: #f1f5f9;
 }
 
 ::-webkit-scrollbar-thumb {
   background: #6366f1;
   border-radius: 8px;
-  border: 2px solid #0f172a;
+  border: 2px solid #f1f5f9;
   transition: background 0.2s ease;
 }
 
@@ -78,11 +81,11 @@ h6 {
 }
 
 ::-webkit-scrollbar-corner {
-  background: #0f172a;
+  background: #f1f5f9;
 }
 
 html {
-  scrollbar-color: #6366f1 #0f172a;
+  scrollbar-color: #6366f1 #f1f5f9;
   scrollbar-width: thin;
 }
 
@@ -92,13 +95,67 @@ html {
   color: #ffffff;
 }
 
-::-moz-selection {
-  background: #6366f1;
-  color: #ffffff;
-}
-
 /* Focus visible accesible por defecto */
 :focus-visible {
   outline: 2px solid #22d3ee;
   outline-offset: 2px;
+}
+
+/* ============ Breakpoints responsivos ============ */
+
+@media (max-width: 768px) {
+  body {
+    font-size: 15px;
+  }
+
+  h1 {
+    font-size: 1.8rem !important;
+  }
+
+  h2 {
+    font-size: 1.3rem !important;
+  }
+
+  /* Touch targets mínimo 44px */
+  button,
+  a.btn,
+  .nav-link,
+  [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Prevenir scroll horizontal de tablas/grid */
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    font-size: 14px;
+  }
+
+  h1 {
+    font-size: 1.5rem !important;
+  }
+
+  h2 {
+    font-size: 1.15rem !important;
+  }
+
+  /* Reducir padding/margin global en móvil pequeño */
+  .page-wrap,
+  .jobs-container,
+  .workers-container,
+  .dash-container,
+  .profile-container {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
 }
