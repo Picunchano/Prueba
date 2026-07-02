@@ -272,6 +272,6 @@ Las trabajadoras nunca pagan para acceder al mercado laboral.
 
 ## Autor
 
-Leonardo Picunche
+Leonardo Picunche Y Dorly
 Arquitectura de Desarrollo Web ICCE1042
 Universidad Mayor 2026
